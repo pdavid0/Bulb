@@ -1,0 +1,2 @@
+include ':app', 'lifx-sdk'
+project(':lifx-sdk').projectDir = new File("$AS_HOME", "/lifx-sdk/app")

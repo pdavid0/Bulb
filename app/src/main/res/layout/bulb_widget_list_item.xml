@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/bulb_list_item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/list_item_default_title" />
+
+    <TextView
+        android:id="@+id/bulb_list_item_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentRight="true"
+        android:text="@null" />
+
+    <ImageView
+        android:id="@+id/buld_list_item_power_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_green_light"
+        android:src="@android:drawable/ic_lock_power_off"
+        android:layout_below="@id/bulb_list_item_title" />
+
+    <ImageView
+        android:id="@+id/bulb_list_item_color"
+        android:layout_width="fill_parent"
+        android:layout_height="8dp"
+        android:background="@android:color/holo_blue_light"
+        android:layout_toEndOf="@+id/buld_list_item_power_state"
+        android:layout_marginLeft="8dp"
+        android:layout_alignBottom="@+id/buld_list_item_power_state"
+        android:layout_below="@+id/bulb_list_item_title" />
+
+    <TextView
+        android:id="@+id/bulb_list_item_color_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_alignStart="@id/bulb_list_item_color"
+        android:layout_alignBottom="@id/bulb_list_item_color"
+        android:gravity="center"
+        android:text="@null" />
+
+    <TextView
+        android:id="@+id/bulb_list_item_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_below="@id/buld_list_item_power_state"
+        android:text="@null" />
+
+</RelativeLayout>
