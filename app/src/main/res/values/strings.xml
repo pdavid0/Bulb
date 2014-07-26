@@ -6,5 +6,12 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="list_item_default_title">Light Bulb Title</string>
+    <string name="title_activity_bulb">Bulb</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>

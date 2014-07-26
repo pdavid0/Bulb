@@ -5,7 +5,7 @@
     android:updatePeriodMillis="86400000"
     android:previewImage="@drawable/bulb"
     android:initialLayout="@layout/bulb_widget"
-    android:configure="com.pdavid.android.widget.bulb.BulbWidgetConfigureActivity"
+    android:configure="com.pdavid.android.widget.bulb.activities.BulbWidgetConfigureActivity"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen|keyguard"
     android:initialKeyguardLayout="@layout/bulb_widget"></appwidget-provider>

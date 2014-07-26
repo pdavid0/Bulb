@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.pdavid.android.widget.bulb">
+    package="com.pdavid.android.widget.bulb" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
-        <activity android:name=".BulbWidgetConfigureActivity">
-            <!--<intent-filter></intent-filter>-->
+        android:theme="@style/AppTheme" >
+
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHERd" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".BulbWidget">
+        <activity android:name=".activities.BulbWidgetConfigureActivity" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.BulbActivity"
+            android:label="@string/title_activity_bulb" />
+
+        <receiver android:name=".BulbWidget" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -32,6 +42,21 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/bulb_widget_info" />
         </receiver>
+        <receiver
+            android:name=".BulbCommandsReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.pdavid.android.widget.action.CLOSE_BULB" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".MyService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
+
     </application>
 
 </manifest>

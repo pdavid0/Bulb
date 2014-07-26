@@ -1,4 +1,4 @@
-package com.pdavid.android.widget.bulb;
+package com.pdavid.android.widget.bulb.activities;
 
 import android.app.ListActivity;
 import android.appwidget.AppWidgetManager;
@@ -7,19 +7,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pdavid.android.widget.bulb.BulbWidget;
+import com.pdavid.android.widget.bulb.R;
 import com.pdavid.android.widget.bulb.adapters.LightsAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lifx.java.android.client.LFXClient;
-import lifx.java.android.internal.LFXWiFiObserver;
 import lifx.java.android.light.LFXLight;
 import lifx.java.android.light.LFXLightCollection;
 import lifx.java.android.light.LFXTaggedLightCollection;
@@ -27,7 +26,7 @@ import lifx.java.android.network_context.LFXNetworkContext;
 
 
 /**
- * The configuration screen for the {@link BulbWidget BulbWidget} AppWidget.
+ * The configuration screen for the {@link com.pdavid.android.widget.bulb.BulbWidget BulbWidget} AppWidget.
  */
 public class BulbWidgetConfigureActivity extends ListActivity {
 
@@ -79,7 +78,7 @@ public class BulbWidgetConfigureActivity extends ListActivity {
             }
         });
 
-        adapter = new LightsAdapter(BulbWidgetConfigureActivity.this, mAllLights.getLights());
+        mAllLights.getLights();
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
@@ -101,8 +100,25 @@ public class BulbWidgetConfigureActivity extends ListActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        ArrayList<LFXLight> mAllLightsLights = mAllLights.getLights();
+        if (mAllLightsLights.size() > 0) {
+            saveList(mAllLightsLights);
+        } else {
+            mAllLightsLights = getList();
+        }
+        adapter = new LightsAdapter(BulbWidgetConfigureActivity.this, mAllLightsLights);
         setListAdapter(adapter);
+    }
+
+    private void saveList(ArrayList<LFXLight> mAllLightsLights) {
+        SharedPreferences.Editor prefs = getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putString("last_seen_lights", new Gson().toJson(mAllLightsLights));
+        prefs.commit();
+    }
+
+    private ArrayList<LFXLight> getList() {
+        return new Gson().fromJson(getSharedPreferences(PREFS_NAME, 0).getString("last_seen_light", "[]"), new TypeToken<List<LFXLight>>() {
+        }.getType());
     }
 
     @Override
@@ -136,7 +152,7 @@ public class BulbWidgetConfigureActivity extends ListActivity {
 
     // Read the prefix from the SharedPreferences object for this widget.
     // If there is no preference saved, get the default from a resource
-    static String loadTitlePref(Context context, int appWidgetId) {
+    public static String loadTitlePref(Context context, int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
         String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
         if (titleValue != null) {
@@ -146,7 +162,7 @@ public class BulbWidgetConfigureActivity extends ListActivity {
         }
     }
 
-    static void deleteTitlePref(Context context, int appWidgetId) {
+    public static void deleteTitlePref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.remove(PREF_PREFIX_KEY + appWidgetId);
         prefs.commit();
