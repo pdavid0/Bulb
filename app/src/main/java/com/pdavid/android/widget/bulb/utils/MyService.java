@@ -1,4 +1,4 @@
-package com.pdavid.android.widget.bulb;
+package com.pdavid.android.widget.bulb.utils;
 
 import android.app.Service;
 import android.content.Intent;

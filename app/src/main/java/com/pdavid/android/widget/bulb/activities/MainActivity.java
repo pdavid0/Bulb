@@ -5,8 +5,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
-
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.pdavid.android.widget.bulb.R;
+import com.pdavid.android.widget.bulb.utils.ChatHeadService;
 
 import java.util.Locale;
 
@@ -74,6 +75,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+        //TODO: chat heads
+        startService(new Intent(this, ChatHeadService.class));
     }
 
 
@@ -130,8 +133,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 2 total pages.
+            return 2;
         }
 
         @Override
@@ -142,8 +145,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return getString(R.string.title_section1).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }

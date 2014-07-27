@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_horizontal_margin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="270dp" />
+
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            android:id="@+id/fragment_main_add_geofence_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            float:fletFloatingHint="Title" />
+
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            android:id="@+id/fragment_main_add_geofence_radius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            float:fletFloatingHint="Password"
+            float:fletInputType="textPassword" />
+
+        <Spinner
+            android:id="@+id/fragment_main_add_geofence_expiration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</ScrollView>

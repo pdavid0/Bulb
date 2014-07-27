@@ -9,9 +9,9 @@
     <string name="title_activity_bulb">Bulb</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_activity_main">Bulb</string>
+    <string name="title_section1">Geofences</string>
+    <string name="title_section2">LIFX Bulbs</string>
+    <string name="MAPS_API_KEY">AIzaSyAwuf0_BLRGaBrYlYs6vcbarI2wiC7WSWQ</string>
 
 </resources>
