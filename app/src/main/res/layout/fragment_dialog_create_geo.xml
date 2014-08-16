@@ -1,38 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:float="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/activity_horizontal_margin">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.MapFragment"
             android:layout_width="match_parent"
-            android:layout_height="270dp" />
+            android:layout_height="270dp"
+            android:layout_weight="1" />
 
         <com.wrapp.floatlabelededittext.FloatLabeledEditText
-            android:id="@+id/fragment_main_add_geofence_title"
+            android:id="@+id/fragment_main_add_geofence_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            float:fletFloatingHint="Title" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            float:fletInputType="textCapWords"
+            float:fletFloatingHint="Name" />
 
         <com.wrapp.floatlabelededittext.FloatLabeledEditText
             android:id="@+id/fragment_main_add_geofence_radius"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            float:fletFloatingHint="Password"
-            float:fletInputType="textPassword" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            float:fletFloatingHint="Radius"
+            float:fletInputType="numberDecimal"
+            float:fletSingleLine="true" />
 
         <Spinner
-            android:id="@+id/fragment_main_add_geofence_expiration"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:id="@+id/fragment_main_add_geofence_type"
+            android:entries="@array/geofence_types"/>
     </LinearLayout>
-</ScrollView>
+
+    <LinearLayout
+        android:id="@+id/fragment_main_add_geofence_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/fragment_main_add_geofence_action_cancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".7"
+            android:text="@android:string/cancel" />
+
+        <Button
+            android:id="@+id/fragment_main_add_geofence_action_ok"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".3"
+            android:text="@android:string/ok"
+            android:textColor="@android:color/holo_blue_light"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

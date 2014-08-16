@@ -1,13 +1,16 @@
 package com.pdavid.android.widget.bulb.geo;
 
+import android.os.Bundle;
+
 import com.google.android.gms.location.Geofence;
+import com.pdavid.android.widget.bulb.utils.persistance.AbstractStore;
 
 /**
  * A single Geofence object, defined by its center and radius.
  */
 public class SimpleGeofence {
     // Instance variables
-    private final String mId;
+    private String mId;
     private final double mLatitude;
     private final double mLongitude;
     private final float mRadius;
@@ -36,6 +39,11 @@ public class SimpleGeofence {
         this.mRadius = radius;
         this.mExpirationDuration = expiration;
         this.mTransitionType = transition;
+    }
+
+    public SimpleGeofence(Bundle extras) {
+        this(extras.getString(AbstractStore.KEY_ID), extras.getDouble(GeofenceUtils.KEY_LATITUDE), extras.getDouble(GeofenceUtils.KEY_LONGITUDE),
+                extras.getFloat(GeofenceUtils.KEY_RADIUS), extras.getLong(GeofenceUtils.KEY_EXPIRATION_DURATION), extras.getInt(GeofenceUtils.KEY_TRANSITION_TYPE));
     }
 
     // Instance field getters
@@ -78,5 +86,9 @@ public class SimpleGeofence {
                         getLatitude(), getLongitude(), getRadius())
                 .setExpirationDuration(mExpirationDuration)
                 .build();
+    }
+
+    public void setId(String id) {
+        this.mId = id;
     }
 }

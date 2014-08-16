@@ -13,5 +13,18 @@
     <string name="title_section1">Geofences</string>
     <string name="title_section2">LIFX Bulbs</string>
     <string name="MAPS_API_KEY">AIzaSyAwuf0_BLRGaBrYlYs6vcbarI2wiC7WSWQ</string>
+    <string name="expiration_spinner_prompt">Choose an expiration time</string>
+    <string-array name="geofence_expiration">
+        <item>5 Days</item>
+        <item>5 Weeks</item>
+        <item>5 Year</item>
+    </string-array>
+
+    <string-array name="geofence_types">
+        <item>Choose the type </item>
+        <item>Exit</item>
+        <item>Enter</item>
+        <item>Both</item>
+    </string-array>
 
 </resources>

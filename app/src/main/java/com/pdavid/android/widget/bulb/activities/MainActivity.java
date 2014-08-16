@@ -19,10 +19,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.pdavid.android.widget.bulb.R;
+import com.pdavid.android.widget.bulb.fragments.GeofenceFragment;
+import com.pdavid.android.widget.bulb.geo.SimpleGeofence;
+import com.pdavid.android.widget.bulb.utils.ChatHeadService;
+import com.pdavid.android.widget.bulb.utils.persistance.Persistence;
 
 import java.util.Locale;
+import java.util.logging.Handler;
 
 import lifx.java.android.client.LFXClient;
 import lifx.java.android.light.LFXTaggedLightCollection;
@@ -112,20 +118,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
         //TODO: chat heads
-        //startService(new Intent(this, ChatHeadService.class));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        localNetworkContext.connect();
-        localNetworkContext.getAllLightsCollection();
+//        startService(new Intent(this, ChatHeadService.class));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         localNetworkContext.disconnect();
+    }
+    @Override
+    protected void onResume() {
+
+        super.onResume();
     }
 
     @Override
@@ -184,6 +188,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
         Log.w("LIFX::DidRemoveTaggedLightCollection", "Collection size is : " + collection.getLights().size());
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+         if (resultCode == RESULT_OK){
+            //TODO:
+            boolean r = Persistence.getInstance(this).getStore().store(new SimpleGeofence(data.getExtras()));
+            if(!r){
+                Toast.makeText(this,"Did not save that ... ",Toast.LENGTH_SHORT).show();
+                startActivityForResult(new Intent(this,GeofenceCreationDialogActivity.class),requestCode);
+            }
+            ((GeofenceFragment)mSectionsPagerAdapter.getItem(0)).refresh();
+        }
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -198,6 +215,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            if (position == 0) return GeofenceFragment.newInstance(position + 1);
             return PlaceholderFragment.newInstance(position + 1);
         }
 

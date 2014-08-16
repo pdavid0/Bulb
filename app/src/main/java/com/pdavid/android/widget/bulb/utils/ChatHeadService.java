@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.pdavid.android.widget.bulb.R;
+import com.pdavid.android.widget.bulb.activities.MainActivity;
 
 /**
  * @author Philippe on 2014-07-26.
@@ -20,6 +21,7 @@ public class ChatHeadService extends Service {
     private WindowManager windowManager;
     private ImageView chatHead;
     private WindowManager.LayoutParams params;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -35,6 +37,9 @@ public class ChatHeadService extends Service {
 
         chatHead = new ImageView(this);
         chatHead.setImageResource(R.drawable.bulb);
+        chatHead.setOnTouchListener(chatDrag);
+        chatHead.setOnLongClickListener(mLongClick);
+        chatHead.setOnClickListener(mClick);
 
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -53,8 +58,28 @@ public class ChatHeadService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (chatHead != null) windowManager.removeView(chatHead);
+        removeView();
     }
+
+    private void removeView() {
+        if (chatHead != null) windowManager.removeViewImmediate(chatHead);
+    }
+
+    View.OnLongClickListener mLongClick = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            removeView();
+            return true;
+        }
+    };
+
+    View.OnClickListener mClick = new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            removeView();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        }
+    };
 
     View.OnTouchListener chatDrag = new View.OnTouchListener() {
         private int initialX;
