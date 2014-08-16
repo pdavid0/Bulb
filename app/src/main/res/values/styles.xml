@@ -15,8 +15,6 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_bulb</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_bulb</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Bulb</item>
-
-
     </style>
 
     <style name="ActionBar.Solid.Bulb" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">

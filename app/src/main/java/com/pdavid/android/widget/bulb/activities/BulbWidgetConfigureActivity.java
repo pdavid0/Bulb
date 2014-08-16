@@ -35,8 +35,8 @@ public class BulbWidgetConfigureActivity extends ListActivity {
     private static final String PREFS_NAME = "com.pdavid.android.widget.bulb.BulbWidget";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     private LFXNetworkContext localNetworkContext;
-    private LightsAdapter adapter;
     private LFXLightCollection mAllLights;
+    private LightsAdapter adapter;
 
     public BulbWidgetConfigureActivity() {
         super();
@@ -93,8 +93,6 @@ public class BulbWidgetConfigureActivity extends ListActivity {
             finish();
             return;
         }
-
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -113,12 +111,13 @@ public class BulbWidgetConfigureActivity extends ListActivity {
     private void saveList(ArrayList<LFXLight> mAllLightsLights) {
         SharedPreferences.Editor prefs = getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.putString("last_seen_lights", new Gson().toJson(mAllLightsLights));
-        prefs.commit();
+        prefs.apply();
     }
 
     private ArrayList<LFXLight> getList() {
-        return new Gson().fromJson(getSharedPreferences(PREFS_NAME, 0).getString("last_seen_light", "[]"), new TypeToken<List<LFXLight>>() {
-        }.getType());
+/// /        return new Gson().fromJson(getSharedPreferences(PREFS_NAME, 0).getString("last_seen_light", "[]"), new TypeToken<List<LFXLight>>() {
+//        }.getType());
+        return new ArrayList<LFXLight>();
     }
 
     @Override

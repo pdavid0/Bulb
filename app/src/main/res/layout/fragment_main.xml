@@ -25,6 +25,9 @@
         android:layout_centerInParent="true"
         android:background="@drawable/rounded_fab"
         android:layout_width="@dimen/fab_size"
-        android:layout_height="@dimen/fab_size" />
+        android:layout_height="@dimen/fab_size"
+        android:singleLine="true"
+        android:textAlignment="viewStart"
+        android:textStyle="bold" />
 
 </RelativeLayout>

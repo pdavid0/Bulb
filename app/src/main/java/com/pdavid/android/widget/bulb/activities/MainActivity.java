@@ -14,11 +14,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.pdavid.android.widget.bulb.R;
+import com.pdavid.android.widget.bulb.fragments.GeofenceFragment;
+import com.pdavid.android.widget.bulb.geo.SimpleGeofence;
 import com.pdavid.android.widget.bulb.utils.ChatHeadService;
+import com.pdavid.android.widget.bulb.utils.persistance.Persistence;
 
 import java.util.Locale;
+import java.util.logging.Handler;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
@@ -76,9 +81,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setTabListener(this));
         }
         //TODO: chat heads
-        startService(new Intent(this, ChatHeadService.class));
+//        startService(new Intent(this, ChatHeadService.class));
     }
 
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -114,6 +124,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+         if (resultCode == RESULT_OK){
+            //TODO:
+            boolean r = Persistence.getInstance(this).getStore().store(new SimpleGeofence(data.getExtras()));
+            if(!r){
+                Toast.makeText(this,"Did not save that ... ",Toast.LENGTH_SHORT).show();
+                startActivityForResult(new Intent(this,GeofenceCreationDialogActivity.class),requestCode);
+            }
+            ((GeofenceFragment)mSectionsPagerAdapter.getItem(0)).refresh();
+        }
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -128,6 +151,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            if (position == 0) return GeofenceFragment.newInstance(position + 1);
             return PlaceholderFragment.newInstance(position + 1);
         }
 
@@ -177,7 +201,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.activity_main, container, false);
             return rootView;
         }
