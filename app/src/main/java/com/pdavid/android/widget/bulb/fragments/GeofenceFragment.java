@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import com.pdavid.android.widget.bulb.R;
 import com.pdavid.android.widget.bulb.dialogs.GeofenceCreationDialog;
+import com.pdavid.android.widget.bulb.geo.SimpleGeofenceStore;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -27,7 +28,8 @@ public class GeofenceFragment extends Fragment {
     @InjectView(R.id.listView)
     ListView mListView;
     @InjectView(R.id.fragment_main_add_geofence_btn)
-    Button mFragmentMainAddGeofenceBtn;
+    Button mAddGeofenceBtn;
+    private SimpleGeofenceStore mStore;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -47,6 +49,7 @@ public class GeofenceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStore = new SimpleGeofenceStore(getActivity());
     }
 
     @Override
@@ -54,7 +57,14 @@ public class GeofenceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.inject(this, rootView);
+
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mAddGeofenceBtn.animate().translationY(100);
     }
 
     @Override
@@ -65,6 +75,7 @@ public class GeofenceFragment extends Fragment {
 
     @OnClick(R.id.fragment_main_add_geofence_btn)
     public void showGeofenceDialogCreation() {
-        GeofenceCreationDialog.newInstance(1).show(getChildFragmentManager(), GeofenceCreationDialog.class.getSimpleName());
+        mAddGeofenceBtn.animate().translationX(100);
+        GeofenceCreationDialog.newInstance(1).show(getFragmentManager(), GeofenceCreationDialog.class.getSimpleName());
     }
 }

@@ -5,10 +5,15 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,11 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.pdavid.android.widget.bulb.R;
-import com.pdavid.android.widget.bulb.utils.ChatHeadService;
 
 import java.util.Locale;
 
-public class MainActivity extends Activity implements ActionBar.TabListener {
+import lifx.java.android.client.LFXClient;
+import lifx.java.android.light.LFXTaggedLightCollection;
+import lifx.java.android.network_context.LFXNetworkContext;
+
+public class MainActivity extends Activity implements ActionBar.TabListener, LFXNetworkContext.LFXNetworkContextListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -36,11 +44,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    private LFXNetworkContext localNetworkContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        localNetworkContext = LFXClient.getSharedInstance(this).getLocalNetworkContext();
+        localNetworkContext.addNetworkContextListener(this);
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -75,8 +87,45 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                //TODO: makeUseOfNewLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
         //TODO: chat heads
-        startService(new Intent(this, ChatHeadService.class));
+        //startService(new Intent(this, ChatHeadService.class));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        localNetworkContext.connect();
+        localNetworkContext.getAllLightsCollection();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        localNetworkContext.disconnect();
     }
 
     @Override
@@ -111,6 +160,28 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    // LIFX Connection
+
+    @Override
+    public void networkContextDidConnect(LFXNetworkContext networkContext) {
+        Log.w("LIFX::DidConnect", networkContext.getName());
+    }
+
+    @Override
+    public void networkContextDidDisconnect(LFXNetworkContext networkContext) {
+        Log.w("LIFX::DidDisconnect", networkContext.getName());
+    }
+
+    @Override
+    public void networkContextDidAddTaggedLightCollection(LFXNetworkContext networkContext, LFXTaggedLightCollection collection) {
+        Log.w("LIFX::DidAddTaggedLight", "Collection size is : " + collection.getLights().size());
+    }
+
+    @Override
+    public void networkContextDidRemoveTaggedLightCollection(LFXNetworkContext networkContext, LFXTaggedLightCollection collection) {
+        Log.w("LIFX::DidRemoveTaggedLightCollection", "Collection size is : " + collection.getLights().size());
     }
 
     /**
