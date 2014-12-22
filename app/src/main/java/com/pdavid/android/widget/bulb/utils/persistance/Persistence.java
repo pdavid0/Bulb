@@ -13,12 +13,13 @@ public class Persistence {
     private final SimpleGeofenceStore store;
     private LFXBulbStore mLFXBulbStore;
 
-    public SimpleGeofenceStore getStore() {
+    public SimpleGeofenceStore getGeofenceStore() {
         return store;
     }
 
     private Persistence(Context ctx){
         this.store = new SimpleGeofenceStore(ctx);
+        this.mLFXBulbStore = new LFXBulbStore(ctx);
     }
 
     public static Persistence getInstance(Context context) {

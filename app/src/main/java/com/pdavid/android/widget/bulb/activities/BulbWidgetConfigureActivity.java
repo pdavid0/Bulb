@@ -104,8 +104,8 @@ public class BulbWidgetConfigureActivity extends ListActivity {
         } else {
             mAllLightsLights = getList();
         }
-        adapter = new LightsAdapter(BulbWidgetConfigureActivity.this, mAllLightsLights);
-        setListAdapter(adapter);
+//        adapter = new LightsAdapter(BulbWidgetConfigureActivity.this, mAllLightsLights);
+//        setListAdapter(adapter);
     }
 
     private void saveList(ArrayList<LFXLight> mAllLightsLights) {

@@ -71,7 +71,6 @@ public class SimpleGeofenceStore extends AbstractStore<SimpleGeofence> {
         return true;
     }
 
-
     @Override
     public boolean delete(String id) {
         clearGeofence(id);

@@ -4,8 +4,16 @@
     <style name="AppTheme" parent="Theme.Bulb">
         <!-- Customize your theme here. -->
     </style>
+    <!-- extend one of the Theme.AppCompat themes -->
+    <style name="Theme.Bulb.AppCompat" parent="Theme.AppCompat.Light">
+        <!-- customize the color palette -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColorSecondary">@color/accent</item>
+    </style>
 
-    <style name="Theme.Bulb" parent="@android:style/Theme.Holo.Light">
+    <style name="Theme.Bulb" parent="android:Theme.Holo.Light">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_bulb</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Bulb</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Bulb</item>
