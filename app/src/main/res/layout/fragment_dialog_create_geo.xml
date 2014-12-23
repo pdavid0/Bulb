@@ -1,67 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:float="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.MapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="270dp"
-            android:layout_weight="1" />
-
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
-            android:id="@+id/fragment_main_add_geofence_name"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            float:fletInputType="textCapWords"
-            float:fletFloatingHint="Name" />
-
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
-            android:id="@+id/fragment_main_add_geofence_radius"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            float:fletFloatingHint="Radius"
-            float:fletInputType="numberDecimal"
-            float:fletSingleLine="true" />
-
-        <Spinner
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fragment_main_add_geofence_type"
-            android:entries="@array/geofence_types"/>
-    </LinearLayout>
+            android:padding="8dp"
+            android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/fragment_main_add_geofence_actions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/fragment_main_add_geofence_action_cancel"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight=".7"
-            android:text="@android:string/cancel" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:padding="4dp"
+                android:textAppearance="?android:textAppearanceLarge" />
 
-        <Button
-            android:id="@+id/fragment_main_add_geofence_action_ok"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight=".3"
-            android:text="@android:string/ok"
-            android:textColor="@android:color/holo_blue_light"
-            android:textStyle="bold" />
-    </LinearLayout>
+            <EditText
+                android:id="@+id/fragment_main_add_geofence_name"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:hint="Home"
+                android:inputType="text" />
+
+            <!--<com.wrapp.floatlabelededittext.FloatLabeledEditText-->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Radius"
+                android:padding="4dp"
+                android:textAppearance="?android:textAppearanceLarge" />
+
+            <EditText
+                android:id="@+id/fragment_main_add_geofence_radius"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:hint="15.0"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event"
+                android:padding="4dp"
+                android:textAppearance="?android:textAppearanceLarge" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/fragment_main_add_geofence_type"
+                android:entries="@array/geofence_types" />
+
+            <LinearLayout
+                android:id="@+id/fragment_main_add_geofence_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true">
+
+                <Button
+                    android:id="@+id/fragment_main_add_geofence_action_cancel"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".7"
+                    android:text="@android:string/cancel" />
+
+                <Button
+                    android:id="@+id/fragment_main_add_geofence_action_ok"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:text="@android:string/ok"
+                    android:textColor="@android:color/holo_blue_light"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
 </RelativeLayout>

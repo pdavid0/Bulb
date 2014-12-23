@@ -6,10 +6,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.content.IntentSender;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -21,21 +24,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.pdavid.android.widget.bulb.R;
 import com.pdavid.android.widget.bulb.fragments.GeofenceFragment;
+import com.pdavid.android.widget.bulb.fragments.LIFXBulbsFragment;
 import com.pdavid.android.widget.bulb.geo.SimpleGeofence;
-import com.pdavid.android.widget.bulb.utils.ChatHeadService;
+import com.pdavid.android.widget.bulb.utils.Constants;
+import com.pdavid.android.widget.bulb.utils.GeofenceTransitionsIntentService;
 import com.pdavid.android.widget.bulb.utils.persistance.Persistence;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.logging.Handler;
 
-import lifx.java.android.client.LFXClient;
-import lifx.java.android.light.LFXTaggedLightCollection;
-import lifx.java.android.network_context.LFXNetworkContext;
-
-public class MainActivity extends Activity implements ActionBar.TabListener, LFXNetworkContext.LFXNetworkContextListener {
-
+public class MainActivity extends Activity implements ActionBar.TabListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+    private static final String TAG = "MainActivity";
+    private PendingIntent mGeofenceRequestIntent;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -51,15 +60,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
      */
     ViewPager mViewPager;
     private LFXNetworkContext localNetworkContext;
+    private GoogleApiClient mApiClient;
+    private Location mLastLocation;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        localNetworkContext = LFXClient.getSharedInstance(this).getLocalNetworkContext();
-        localNetworkContext.addNetworkContextListener(this);
-
+        // Rather than displayng this activity, simply display a toast indicating that the geofence
+        // service is being created. This should happen in less than a second.
+        if (!isGooglePlayServicesAvailable()) {
+            Log.e(TAG, "Google Play services unavailable.");
+            finish();
+            return;
+        } else {
+            //todo : show proper message
+        }
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -117,8 +134,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
-        //TODO: chat heads
+        //TODO: bulb heads
 //        startService(new Intent(this, ChatHeadService.class));
+
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mApiClient.connect();
     }
 
     @Override
@@ -190,14 +215,94 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-         if (resultCode == RESULT_OK){
+        if (requestCode == 100 && resultCode == RESULT_OK) {
             //TODO:
-            boolean r = Persistence.getInstance(this).getStore().store(new SimpleGeofence(data.getExtras()));
-            if(!r){
-                Toast.makeText(this,"Did not save that ... ",Toast.LENGTH_SHORT).show();
-                startActivityForResult(new Intent(this,GeofenceCreationDialogActivity.class),requestCode);
+            boolean result = Persistence.getInstance(this).getGeofenceStore().store(new SimpleGeofence(data.getExtras()));
+            if (!result) {
+                Toast.makeText(this, "Did not save that ... ", Toast.LENGTH_SHORT).show();
+                startActivityForResult(new Intent(this, GeofenceCreationDialogActivity.class), requestCode);
             }
-            ((GeofenceFragment)mSectionsPagerAdapter.getItem(0)).refresh();
+//            ((GeofenceFragment) mSectionsPagerAdapter.getItem(0)).refresh();
+        }
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    /**
+     * Once the connection is available, send a request to add the Geofences.
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        // Get the PendingIntent for the geofence monitoring request.
+        // Send a request to add the current geofences.
+        mGeofenceRequestIntent = getGeofenceTransitionPendingIntent();
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mApiClient);
+        List<Geofence> mGeofenceList = new ArrayList<>();
+        List<SimpleGeofence> simpleGeofenceList = Persistence.getInstance(this).getGeofenceStore().list();
+        //convert
+        //TODO: use Android Geofence Class
+        for (SimpleGeofence simpleGeofence : simpleGeofenceList) {
+            mGeofenceList.add(simpleGeofence.toGeofence());
+        }
+
+        Toast.makeText(this, getString(R.string.start_geofence_service), Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Create a PendingIntent that triggers GeofenceTransitionIntentService when a geofence
+     * transition occurs.
+     */
+    private PendingIntent getGeofenceTransitionPendingIntent() {
+        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // If the error has a resolution, start a Google Play services activity to resolve it.
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this,
+                        Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                Log.e(TAG, "Exception while resolving connection error.", e);
+            }
+        } else {
+            int errorCode = connectionResult.getErrorCode();
+            Log.e(TAG, "Connection to Google Play services failed with error code " + errorCode);
+        }
+    }
+
+    public void startGeofenceCreationDialog(Intent intent, int i) {
+        startActivityForResult(intent, i);
+    }
+
+    /**
+     * Checks if Google Play services is available.
+     *
+     * @return true if it is.
+     */
+    private boolean isGooglePlayServicesAvailable() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == resultCode) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Google Play services is available.");
+            }
+            return true;
+        } else {
+            Log.e(TAG, "Google Play services is unavailable.");
+            return false;
         }
     }
 
@@ -216,6 +321,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, LFX
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             if (position == 0) return GeofenceFragment.newInstance(position + 1);
+            else if (position == 1) return LIFXBulbsFragment.newInstance(position + 1);
             return PlaceholderFragment.newInstance(position + 1);
         }
 
