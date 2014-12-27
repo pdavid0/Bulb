@@ -2,17 +2,17 @@ package com.pdavid.android.widget.bulb.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.content.IntentSender;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -22,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -59,7 +61,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Goo
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-    private LFXNetworkContext localNetworkContext;
+
     private GoogleApiClient mApiClient;
     private Location mLastLocation;
     private LocationRequest mLocationRequest;
@@ -68,6 +70,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Goo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Fade in
+        FrameLayout layout = (FrameLayout) findViewById(android.R.id.content);
+        AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
+        animation.setFillAfter(true);
+        animation.setDuration(1200);
+        //apply the animation ( fade In ) to your Layout
+        layout.startAnimation(animation);
+
         // Rather than displayng this activity, simply display a toast indicating that the geofence
         // service is being created. This should happen in less than a second.
         if (!isGooglePlayServicesAvailable()) {
@@ -147,11 +157,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Goo
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        localNetworkContext.disconnect();
-    }
-    @Override
     protected void onResume() {
 
         super.onResume();
@@ -171,7 +176,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Goo
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+            View view = findViewById(android.R.id.content);
+            ActivityOptions activityOptions = ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
+            startActivity(new Intent(this, SettingsActivity.class),activityOptions.toBundle());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -193,25 +200,25 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Goo
 
     // LIFX Connection
 
-    @Override
-    public void networkContextDidConnect(LFXNetworkContext networkContext) {
-        Log.w("LIFX::DidConnect", networkContext.getName());
-    }
-
-    @Override
-    public void networkContextDidDisconnect(LFXNetworkContext networkContext) {
-        Log.w("LIFX::DidDisconnect", networkContext.getName());
-    }
-
-    @Override
-    public void networkContextDidAddTaggedLightCollection(LFXNetworkContext networkContext, LFXTaggedLightCollection collection) {
-        Log.w("LIFX::DidAddTaggedLight", "Collection size is : " + collection.getLights().size());
-    }
-
-    @Override
-    public void networkContextDidRemoveTaggedLightCollection(LFXNetworkContext networkContext, LFXTaggedLightCollection collection) {
-        Log.w("LIFX::DidRemoveTaggedLightCollection", "Collection size is : " + collection.getLights().size());
-    }
+//    @Override
+//    public void networkContextDidConnect(LFXNetworkContext networkContext) {
+//        Log.w("LIFX::DidConnect", networkContext.getName());
+//    }
+//
+//    @Override
+//    public void networkContextDidDisconnect(LFXNetworkContext networkContext) {
+//        Log.w("LIFX::DidDisconnect", networkContext.getName());
+//    }
+//
+//    @Override
+//    public void networkContextDidAddTaggedLightCollection(LFXNetworkContext networkContext, LFXTaggedLightCollection collection) {
+//        Log.w("LIFX::DidAddTaggedLight", "Collection size is : " + collection.getLights().size());
+//    }
+//
+//    @Override
+//    public void networkContextDidRemoveTaggedLightCollection(LFXNetworkContext networkContext, LFXTaggedLightCollection collection) {
+//        Log.w("LIFX::DidRemoveTaggedLightCollection", "Collection size is : " + collection.getLights().size());
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.pdavid.android.widget.bulb.R;
 import com.pdavid.android.widget.bulb.activities.GeofenceCreationDialogActivity;
@@ -36,7 +36,7 @@ public class GeofenceFragment extends Fragment {
     //    @InjectView(R.id.listView)
 //    ListView mListView;
     @InjectView(R.id.fragment_main_add_geofence_btn)
-    Button mNewGeofenceBtn;
+    ImageButton mNewGeofenceBtn;
     @InjectView(R.id.my_recycler_view)
     public RecyclerView mRecyclerView;
 

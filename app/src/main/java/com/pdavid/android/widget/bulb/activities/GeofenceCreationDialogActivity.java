@@ -1,14 +1,18 @@
 package com.pdavid.android.widget.bulb.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -74,6 +78,36 @@ public class GeofenceCreationDialogActivity extends Activity implements
         setContentView(R.layout.fragment_dialog_create_geo);
         ButterKnife.inject(this);
 
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View myView = findViewById(android.R.id.content);
+            myView.setVisibility(View.INVISIBLE);
+            //Circular reveal after the view is attached to a windows
+            //Otherwise the animator cant work
+            myView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+
+                    // get the center for the clipping circle
+                    int cx = (v.getLeft() + v.getRight()) / 2;
+                    int cy = (v.getTop() + v.getBottom()) / 2;
+
+                    // get the final radius for the clipping circle
+                    int finalRadius = Math.max(v.getWidth(), v.getHeight());
+
+                    // create the animator for this view (the start radius is zero)
+                    Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
+                    // make the view visible and start the animation
+                    v.setVisibility(View.VISIBLE);
+                    anim.start();
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+
+                }
+            });
+        }
+
         setResult(RESULT_CANCELED);
 
         setTitle("Create a Geofence");
@@ -107,14 +141,14 @@ public class GeofenceCreationDialogActivity extends Activity implements
     @OnClick(R.id.fragment_main_add_geofence_action_ok)
     public void onActionOK() {
         //TODO: save to DB
-        Intent data = new Intent();
+        final Intent data = new Intent();
 
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mApiClient);
         }
         if (mCurrentLocation != null) {
-            data.putExtra(AbstractStore.KEY_ID, mFragmentMainAddGeofenceRadius.getText().toString());
+            data.putExtra(AbstractStore.KEY_ID, mFragmentMainAddGeofenceName.getText().toString());
             data.putExtra(GeofenceUtils.KEY_LATITUDE, mCurrentLocation.getLatitude());
             data.putExtra(GeofenceUtils.KEY_LONGITUDE, mCurrentLocation.getLongitude());
             data.putExtra(GeofenceUtils.KEY_RADIUS, Float.valueOf(mFragmentMainAddGeofenceRadius.getText().toString()));
@@ -125,8 +159,39 @@ public class GeofenceCreationDialogActivity extends Activity implements
             Toast.makeText(this, "Coudn't get location ...", Toast.LENGTH_SHORT).show();
         }
 
-        setResult(RESULT_OK, data);
-        finish();
+        //circular hide
+        // previously visible view
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            final View myView = findViewById(android.R.id.content);
+
+            // get the center for the clipping circle
+            int cx = (myView.getLeft() + myView.getRight()) / 2;
+            int cy = (myView.getTop() + myView.getBottom()) / 2;
+
+            // get the initial radius for the clipping circle
+            int initialRadius = myView.getWidth();
+
+            // create the animation (the final radius is zero)
+            Animator anim =
+                    ViewAnimationUtils.createCircularReveal(myView, cx, cy, initialRadius, 0);
+
+            // make the view invisible when the animation is done
+            anim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    myView.setVisibility(View.INVISIBLE);
+                    setResult(RESULT_OK, data);
+                    finish();
+                }
+            });
+
+            // start the animation
+            anim.start();
+        } else {
+            setResult(RESULT_OK, data);
+            finish();
+        }
     }
 
 
